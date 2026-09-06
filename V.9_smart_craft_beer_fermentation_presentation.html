@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Craft Beer Fermentation Modeling - Applied Calculus Report</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Chart.js for Case Study Visualization -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- MathJax for LaTeX Equations -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .slide {
+      display: none;
+      animation: fadeIn 0.3s ease-in-out forwards;
+    }
+    .slide.active {
+      display: flex;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .cite-ref {
+      color: #f59e0b;
+      font-weight: 600;
+      font-size: 0.85em;
+      vertical-align: super;
+      margin-left: 2px;
+      cursor: pointer;
+    }
+    .cite-ref:hover {
+      text-decoration: underline;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.6);
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: rgba(245, 158, 11, 0.3);
+      border-radius: 3px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+      background: rgba(245, 158, 11, 0.6);
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-slate-950 overflow-x-hidden">
+
+  <!-- Top Navigation Header -->
+  <header class="bg-slate-900/90 border-b border-slate-800 backdrop-blur sticky top-0 z-50 px-4 md:px-8 py-3 flex items-center justify-between">
+    <div class="flex items-center space-x-3">
+      <div class="bg-amber-500/20 text-amber-400 p-2 rounded-lg border border-amber-500/30">
+        <i class="fa-solid fa-flask-vial text-xl"></i>
+      </div>
+      <div>
+        <h1 class="text-base md:text-lg font-bold text-white tracking-tight leading-none">Smart Brewing Kinetics Report</h1>
+        <p class="text-xs text-slate-400 mt-0.5">Applied Chemical Engineering & Mathematics</p>
+      </div>
+    </div>
+
+    <!-- Slide Indicators & Controls -->
+    <div class="flex items-center space-x-2 md:space-x-3">
+      <div id="slide-indicators" class="hidden lg:flex items-center space-x-1">
+        <button onclick="goToSlide(1)" class="indicator-dot px-2 py-1 text-xs font-semibold rounded transition border border-slate-700 bg-slate-800 text-slate-300">1. About Me</button>
+        <button onclick="goToSlide(2)" class="indicator-dot px-2 py-1 text-xs font-semibold rounded transition border border-slate-700 bg-slate-800 text-slate-300">2. Career</button>
+        <button onclick="goToSlide(3)" class="indicator-dot px-2 py-1 text-xs font-semibold rounded transition border border-slate-700 bg-slate-800 text-slate-300">3. Summary</button>
+        <button onclick="goToSlide(4)" class="indicator-dot px-2 py-1 text-xs font-semibold rounded transition border border-slate-700 bg-slate-800 text-slate-300">4. Derivation</button>
+        <button onclick="goToSlide(5)" class="indicator-dot px-2 py-1 text-xs font-semibold rounded transition border border-slate-700 bg-slate-800 text-slate-300">5. Stoichiometry</button>
+        <button onclick="goToSlide(6)" class="indicator-dot px-2 py-1 text-xs font-semibold rounded transition border border-slate-700 bg-slate-800 text-slate-300">6. Case Study</button>
+        <button onclick="goToSlide(7)" class="indicator-dot px-2 py-1 text-xs font-semibold rounded transition border border-slate-700 bg-slate-800 text-slate-300">7. References</button>
+      </div>
+      <span class="text-xs font-mono bg-slate-800 px-3 py-1 rounded-full text-amber-400 border border-slate-700">
+        <span id="current-slide-num">1</span> / 7
+      </span>
+    </div>
+  </header>
+
+  <!-- Main Slide Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 flex flex-col justify-center">
+
+    <!-- ================= SLIDE 1: INTRODUCTION OF MYSELF ================= -->
+    <section id="slide-1" class="slide active flex-col space-y-5">
+      <div class="border-b border-slate-800 pb-3 flex flex-col md:flex-row md:items-center justify-between gap-2">
+        <div>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20 mb-1">
+            Author Profile
+          </span>
+          <h2 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">Introduction of Myself</h2>
+          <p class="text-slate-400 text-xs md:text-sm">Academic background</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 px-3.5 py-2 rounded-xl flex items-center space-x-3 text-amber-400">
+          <i class="fa-solid fa-user-graduate text-2xl"></i>
+          <div>
+            <div class="text-[11px] text-slate-400 uppercase font-bold tracking-wider">Student Profile</div>
+            <div class="text-xs font-bold text-white">ID: 2610717302003</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+        <!-- Photo Gallery (2 Photos - Responsive Proportional Containment) -->
+        <div class="lg:col-span-5 grid grid-cols-2 gap-3.5">
+          <!-- Card 1: Professional Portrait -->
+          <div class="bg-slate-900/90 p-2.5 rounded-2xl border border-slate-800 shadow-xl flex flex-col justify-between hover:border-amber-500/40 transition">
+            <div class="relative w-full aspect-[4/5] rounded-xl overflow-hidden bg-slate-950 border border-slate-800/80 flex items-center justify-center">
+              <img src="Professional Identity.jpg" alt="Mr Somsak Treetipwattana - Professional Identity" class="w-full h-full object-cover object-top" onerror="if(this.src.indexOf('M01')===-1){this.src='M01 cropped.jpg';}else{this.onerror=null;this.src='https://placehold.co/400x500/1e293b/f59e0b?text=Professional+Identity';}">
+            </div>
+            <div class="pt-2 text-center">
+              <span class="inline-block text-[11px] font-semibold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20">
+                Professional Identity
+              </span>
+            </div>
+          </div>
+
+          <!-- Card 2: Academic Gown -->
+          <div class="bg-slate-900/90 p-2.5 rounded-2xl border border-slate-800 shadow-xl flex flex-col justify-between hover:border-cyan-500/40 transition">
+            <div class="relative w-full aspect-[4/5] rounded-xl overflow-hidden bg-slate-950 border border-slate-800/80 flex items-center justify-center">
+              <img src="Academic Gown.jpg" alt="Mr Somsak Treetipwattana - Academic Gown" class="w-full h-full object-cover object-top" onerror="if(this.src.indexOf('FB_IMG')===-1){this.src='FB_IMG_1697910656766.jpg';}else{this.onerror=null;this.src='https://placehold.co/400x500/1e293b/38bdf8?text=Academic+Gown';}">
+            </div>
+            <div class="pt-2 text-center">
+              <span class="inline-block text-[11px] font-semibold text-cyan-300 bg-cyan-500/10 px-2 py-0.5 rounded-md border border-cyan-500/20">
+                Academic Gown
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bio & Academic Information -->
+        <div class="lg:col-span-7 flex flex-col justify-between space-y-3.5">
+          <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl space-y-3 shadow-lg">
+            <div>
+              <span class="text-xs text-amber-400 font-bold uppercase tracking-wider">Full Name</span>
+              <h3 class="text-2xl font-bold text-white">MR SOMSAK TREETIPWATTANA</h3>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                <span class="text-slate-400 text-xs block">Student ID</span>
+                <span class="text-sm font-mono font-bold text-amber-400">2610717302003</span>
+              </div>
+              <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                <span class="text-slate-400 text-xs block">Department</span>
+                <span class="text-sm font-bold text-slate-200 leading-snug">Computer Engineering & AI</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Educational Background -->
+          <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl space-y-3 shadow-lg flex-1 flex flex-col justify-center">
+            <h4 class="text-sm font-bold text-amber-400 flex items-center">
+              <i class="fa-solid fa-graduation-cap mr-2"></i> Degree Background
+            </h4>
+            <div class="space-y-2.5 text-xs text-slate-300">
+              <div class="flex items-start space-x-3 bg-slate-950/70 p-3 rounded-xl border border-slate-800/80">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-400 mt-1 flex-shrink-0"></span>
+                <div>
+                  <b class="text-white text-sm">Master's Degree:</b> Master of Engineering in Chemical Engineering
+                  <span class="block text-amber-300/95 font-medium text-xs mt-0.5">Major in Biopharmaceutical Engineering</span>
+                </div>
+              </div>
+              <div class="flex items-start space-x-3 bg-slate-950/70 p-3 rounded-xl border border-slate-800/80">
+                <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 mt-1 flex-shrink-0"></span>
+                <div>
+                  <b class="text-white text-sm">Bachelor's Degree:</b> Bachelor of Engineering in Chemical Engineering
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SLIDE 2: CURRENT WORK INTRODUCTION ================= -->
+    <section id="slide-2" class="slide flex-col space-y-5">
+      <div class="border-b border-slate-800 pb-3 flex flex-col md:flex-row md:items-center justify-between gap-2">
+        <div>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20 mb-1">
+            Professional Experience
+          </span>
+          <h2 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">Current Professional Career</h2>
+          <p class="text-slate-400 text-xs md:text-sm">Medical Regulations and Registration</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 px-3.5 py-2 rounded-xl flex items-center space-x-3 text-cyan-400">
+          <i class="fa-solid fa-hospital-user text-2xl"></i>
+          <div>
+            <div class="text-[11px] text-slate-400 uppercase font-bold tracking-wider">Industry</div>
+            <div class="text-xs font-bold text-white">Medical Device Healthcare</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+        <!-- Work Image (Proportionally Balanced & Fitted) -->
+        <div class="lg:col-span-5 flex justify-center">
+          <div class="bg-slate-900/90 p-3 rounded-2xl border border-slate-800 shadow-xl flex flex-col justify-between w-full max-w-sm hover:border-cyan-500/40 transition">
+            <div class="relative w-full h-72 md:h-80 rounded-xl overflow-hidden bg-slate-950 border border-slate-800/80 flex items-center justify-center">
+              <img src="Customer Site Visit.jpg" alt="At customer site with Siemens Healthineers ARTIS one" class="w-full h-full object-cover object-top" onerror="if(this.src.indexOf('20260721')===-1){this.src='20260721_142626.jpg';}else{this.onerror=null;this.src='https://placehold.co/400x500/1e293b/38bdf8?text=Customer+Site+Visit';}">
+            </div>
+            <div class="pt-2 text-center">
+              <span class="inline-block text-xs font-semibold text-cyan-300 bg-cyan-500/10 px-3 py-1 rounded-md border border-cyan-500/20">
+                Customer Site Visit
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Career Details & Expanded Multi-Company Competencies (Zeiss, Meticuly, Sri Trang) -->
+        <div class="lg:col-span-7 flex flex-col justify-between space-y-3.5">
+          <div class="bg-slate-900/80 border border-slate-800 p-4 md:p-5 rounded-2xl space-y-1.5 shadow-lg">
+            <span class="text-xs text-cyan-400 font-bold uppercase tracking-wider">Current Position</span>
+            <h3 class="text-xl md:text-2xl font-bold text-white">Regulatory Affairs Professional for Medical Devices</h3>
+            <p class="text-amber-400 font-semibold text-xs md:text-sm">Siemens Healthcare Ltd.</p>
+          </div>
+
+          <div class="bg-slate-900/80 border border-slate-800 p-4 md:p-5 rounded-2xl space-y-2.5 shadow-lg flex-1">
+            <h4 class="text-xs md:text-sm font-bold text-slate-200 flex items-center">
+              <i class="fa-solid fa-shield-halved mr-2 text-amber-400"></i> Core Medical Device Regulatory Competencies
+            </h4>
+            <ul class="space-y-2 text-xs text-slate-300">
+              <li class="flex items-start bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/70">
+                <i class="fa-solid fa-check text-cyan-400 text-xs mt-0.5 mr-2 flex-shrink-0"></i>
+                <span><b>Diagnostic & Interventional Systems (Siemens & Carl Zeiss):</b> Directing Thai FDA pre-market approvals, CSDT dossier submissions, and import licenses for advanced diagnostic imaging (CT/MRI/Angiography) and ophthalmic microsurgery devices.</span>
+              </li>
+              <li class="flex items-start bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/70">
+                <i class="fa-solid fa-check text-cyan-400 text-xs mt-0.5 mr-2 flex-shrink-0"></i>
+                <span><b>Custom 3D-Printed Implants & Biomaterials (Meticuly):</b> Managing regulatory strategy, design dossier technical files, and biocompatibility evaluations (ISO 10993) for patient-specific titanium orthopedic and neurosurgical implants.</span>
+              </li>
+              <li class="flex items-start bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/70">
+                <i class="fa-solid fa-check text-cyan-400 text-xs mt-0.5 mr-2 flex-shrink-0"></i>
+                <span><b>EU MDR & PPE Registrations (Sri Trang Gloves):</b> Authoring technical documentation for EU MDR device registrations, auditing packaging artworks for MDR and PPE compliance, and coordinating plant-level technical support.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SLIDE 3: EXECUTIVE SUMMARY ================= -->
+    <section id="slide-3" class="slide flex-col space-y-6">
+      <div class="border-b border-slate-800 pb-3 flex flex-col md:flex-row md:items-center justify-between gap-2">
+        <div>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20 mb-1">
+            Executive Briefing
+          </span>
+          <h2 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">Executive Summary & Project Overview</h2>
+          <p class="text-slate-400 text-xs md:text-sm">Integrating Calculus kinetics to optimize craft beer fermentation yield and automation.</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 px-3.5 py-2 rounded-xl flex items-center space-x-3 text-amber-400">
+          <i class="fa-solid fa-beer-mug-empty text-2xl"></i>
+          <div>
+            <div class="text-[11px] text-slate-400 uppercase font-bold tracking-wider">Target Profile</div>
+            <div class="text-xs font-bold text-white">Pale Ale (5.52% ABV)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Metric Ribbon -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-slate-900/80 border border-slate-800 p-3.5 rounded-xl flex items-center space-x-3">
+          <div class="p-2.5 bg-rose-500/10 text-rose-400 rounded-lg text-xl border border-rose-500/20">
+            <i class="fa-solid fa-dumpster-fire"></i>
+          </div>
+          <div>
+            <div class="text-xl font-bold text-rose-400">-80% Waste</div>
+            <div class="text-[11px] text-slate-400">Sampling Drain Reduction</div>
+          </div>
+        </div>
+        <div class="bg-slate-900/80 border border-slate-800 p-3.5 rounded-xl flex items-center space-x-3">
+          <div class="p-2.5 bg-amber-500/10 text-amber-400 rounded-lg text-xl border border-amber-500/20">
+            <i class="fa-solid fa-square-root-variable"></i>
+          </div>
+          <div>
+            <div class="text-xl font-bold text-amber-400">Calculus</div>
+            <div class="text-[11px] text-slate-400">Partial Fractions & Limits</div>
+          </div>
+        </div>
+        <div class="bg-slate-900/80 border border-slate-800 p-3.5 rounded-xl flex items-center space-x-3">
+          <div class="p-2.5 bg-emerald-500/10 text-emerald-400 rounded-lg text-xl border border-emerald-500/20">
+            <i class="fa-solid fa-robot"></i>
+          </div>
+          <div>
+            <div class="text-xl font-bold text-emerald-400">Day 4 & 7</div>
+            <div class="text-[11px] text-slate-400">Automated Temp & Cold Crash</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3 Core Content Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <!-- 1. The Challenge -->
+        <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl flex flex-col justify-between hover:border-slate-700 transition">
+          <div>
+            <div class="flex items-center space-x-2 text-rose-400 font-bold mb-2.5 text-base">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              <h3>1. Industrial Challenge</h3>
+            </div>
+            <ul class="space-y-2 text-xs text-slate-300">
+              <li class="flex items-start">
+                <i class="fa-solid fa-circle-xmark text-rose-400 text-[11px] mt-1 mr-1.5 flex-shrink-0"></i>
+                <span><b>Product Loss:</b> Daily valve sampling drains 50–100 mL/day, wasting <b>5–10%</b> of small 20–50L pilot batches.</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fa-solid fa-circle-xmark text-rose-400 text-[11px] mt-1 mr-1.5 flex-shrink-0"></i>
+                <span><b>Contamination Risk:</b> Frequent valve drains expose sterile tanks to wild bacteria & oxygen off-flavors.</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fa-solid fa-circle-xmark text-rose-400 text-[11px] mt-1 mr-1.5 flex-shrink-0"></i>
+                <span><b>Imprecise Timing:</b> Guessing sugar completion leads to missed windows for <i>Diacetyl Rest</i> & <i>Cold Crash</i>.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="mt-3 pt-2.5 border-t border-slate-800/80 text-[11px] text-slate-400 italic">
+            Objective: Minimize manual valve drains using predictive kinetics.
+          </div>
+        </div>
+
+        <!-- 2. Mathematical Models -->
+        <div class="bg-slate-900/60 border border-amber-500/30 p-4 rounded-2xl flex flex-col justify-between relative overflow-hidden hover:border-amber-500/50 transition">
+          <div>
+            <div class="flex items-center space-x-2 text-amber-400 font-bold mb-2.5 text-base">
+              <i class="fa-solid fa-calculator"></i>
+              <h3>2. Math Models</h3>
+            </div>
+            <p class="text-[11px] text-slate-300 mb-1.5"><b>Autocatalytic Differential Rate Law:</b></p>
+            <div class="bg-slate-950 p-2 rounded-lg text-center text-xs text-amber-300 font-mono mb-2 border border-slate-800">
+              $$\frac{dS}{dt} = -k(S - S_\infty)(S_0 - S)$$
+            </div>
+            <p class="text-[11px] text-slate-300 mb-1"><b>Explicit Partial Fraction Solution:</b></p>
+            <div class="bg-slate-950 p-2 rounded-lg text-center text-xs text-emerald-300 font-mono mb-2 border border-slate-800">
+              $$S(t) = S_\infty + \frac{S_0 - S_\infty}{1 + C \cdot e^{(S_0 - S_\infty)kt}}$$
+            </div>
+            <p class="text-[11px] text-slate-400">
+              Parameters: $S_0 = 120\text{ g/L}$ (Initial extract) and $S_\infty = 30\text{ g/L}$ (Unfermentable dextrins).
+            </p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-slate-800 text-xs text-amber-400 font-semibold flex justify-between items-center">
+            <span>Terminal Limit:</span>
+            <span class="bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 font-mono text-[11px]">$$\lim_{t \to \infty} S(t) = 30\text{ g/L}$$</span>
+          </div>
+        </div>
+
+        <!-- 3. Commercial Value -->
+        <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl flex flex-col justify-between hover:border-slate-700 transition">
+          <div>
+            <div class="flex items-center space-x-2 text-emerald-400 font-bold mb-2.5 text-base">
+              <i class="fa-solid fa-chart-line"></i>
+              <h3>3. Commercial Value</h3>
+            </div>
+            <ul class="space-y-2 text-xs text-slate-300">
+              <li class="flex items-start">
+                <i class="fa-solid fa-circle-check text-emerald-400 text-[11px] mt-1 mr-1.5 flex-shrink-0"></i>
+                <span><b>Minimal Sampling:</b> Reduces sampling to only 2 checks (Day 4 calibration & Day 7 confirmation).</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fa-solid fa-circle-check text-emerald-400 text-[11px] mt-1 mr-1.5 flex-shrink-0"></i>
+                <span><b>Automation Ready:</b> Automated temperature ramp-up on Day 4 and Cold Crash trigger on Day 7.</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fa-solid fa-circle-check text-emerald-400 text-[11px] mt-1 mr-1.5 flex-shrink-0"></i>
+                <span><b>Batch Consistency:</b> Guarantees target <b>5.52% ABV</b> and identical mouthfeel across batches.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="mt-3 pt-2.5 border-t border-slate-800/80 flex items-center justify-between text-[11px]">
+            <span class="text-slate-400">Implementation:</span>
+            <span class="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full font-medium border border-emerald-500/30">
+              Ready for PLC / IoT Integration
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SLIDE 4: CALCULATIONS & DERIVATION ================= -->
+    <section id="slide-4" class="slide flex-col space-y-5">
+      <div class="border-b border-slate-800 pb-3 flex flex-col md:flex-row md:items-center justify-between gap-2">
+        <div>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20 mb-1">
+            Mathematical Core
+          </span>
+          <h2 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">Differential Equation & Partial Fractions Integration</h2>
+          <p class="text-slate-400 text-xs md:text-sm">Detailed physical kinetics, parameter units, and rigorous step-by-step integration.</p>
+        </div>
+        <div class="text-xs text-slate-400 bg-slate-900 px-3 py-1 rounded-lg border border-slate-800 font-mono">
+          Method: <span class="text-amber-400">Separation of Variables + Partial Fractions</span>
+        </div>
+      </div>
+
+      <!-- Parameter Definition Table with Units -->
+      <div class="bg-slate-900/90 border border-slate-800 px-4 py-2.5 rounded-xl text-xs flex flex-wrap items-center justify-between gap-2">
+        <div><b class="text-amber-400">$S(t)$</b>: Sugar concentration [$\text{g/L}$]</div>
+        <div><b class="text-amber-400">$t$</b>: Fermentation time [$\text{day}$]</div>
+        <div><b class="text-amber-400">$S_0$</b>: Theoretical initial extract ($120\text{ g/L}$)</div>
+        <div><b class="text-amber-400">$S_{start}$</b>: Initial extract at pitch ($115\text{ g/L}$)</div>
+        <div><b class="text-amber-400">$S_\infty$</b>: Residual dextrins ($30\text{ g/L}$)</div>
+        <div><b class="text-amber-400">$k$</b>: Rate constant ($0.008\text{ L/(g}\cdot\text{day)}$)</div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 custom-scroll overflow-y-auto max-h-[64vh] pr-1">
+        <!-- Left: Derivation of Rate Law and Origin of k -->
+        <div class="bg-slate-900/70 border border-slate-800 p-4 rounded-2xl space-y-3">
+          <h3 class="text-amber-400 font-bold text-sm border-b border-slate-800 pb-1.5 flex items-center space-x-2">
+            <i class="fa-solid fa-vial-circle-check"></i>
+            <span>1. Physical Derivation of $\frac{dS}{dt}$ & Parameter $k$ <a href="#" onclick="goToSlide(7)" class="cite-ref">[1]</a><a href="#" onclick="goToSlide(7)" class="cite-ref">[2]</a></span>
+          </h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Yeast consumes fermentable sugars $(S - S_\infty)$ to generate cellular biomass $X(t)$. The instantaneous reaction rate depends on two dynamic factors:
+          </p>
+          <ul class="text-xs space-y-1.5 text-slate-300 list-disc list-inside bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+            <li><b>Digestible Sugar Remaining:</b> $(S - S_\infty)\text{ g/L}$</li>
+            <li><b>Active Yeast Biomass Accumulated:</b> $X(t) \propto (S_0 - S)\text{ g/L}$</li>
+          </ul>
+          <p class="text-xs text-slate-300">Combining these yields the 2nd-order non-linear differential rate equation:</p>
+          <div class="bg-slate-950 p-2 rounded-xl border border-amber-500/30 text-xs font-mono text-center text-emerald-400 font-bold">
+            $$\frac{dS}{dt} = -k (S - S_\infty)(S_0 - S)$$
+          </div>
+          
+          <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-[11px] text-slate-300 space-y-1">
+            <span class="text-amber-400 font-semibold block"><i class="fa-solid fa-circle-question mr-1"></i> Clarification: $S_0 = 120\text{ g/L}$ vs $S_{start} = 115\text{ g/L}$</span>
+            <p class="text-slate-400 leading-relaxed">
+              $S_0 = 120\text{ g/L}$ is the theoretical ceiling of all fermentable and non-fermentable extract in the unpitched wort. At pitch time $t=0$, $S(0) = S_{start} = 115\text{ g/L}$ accounts for initial yeast pitching slurry dilution and rapid early uptake. If set to $S_{start} = S_0$, the solution converges continuously.
+            </p>
+          </div>
+
+          <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-[11px] text-slate-300 space-y-1">
+            <span class="text-amber-400 font-semibold block"><i class="fa-solid fa-circle-info mr-1"></i> Why is $k = 0.008\text{ L/(g}\cdot\text{day)}$?</span>
+            <p class="text-slate-400">
+              The rate constant $k$ is determined empirically from pilot-scale ale fermentations at $18^\circ\text{C}$ ($k = \frac{\mu_{max}}{Y_{X/S} \cdot (S_0 - S_\infty)}$). For standard *S. cerevisiae*, $\mu_{max} \approx 0.35\text{ day}^{-1}$ and $Y_{X/S} \approx 0.48$, giving $k \approx 0.008\text{ L/(g}\cdot\text{day)}$.
+            </p>
+          </div>
+        </div>
+
+        <!-- Right: Step-by-Step Partial Fractions -->
+        <div class="bg-slate-900/70 border border-slate-800 p-4 rounded-2xl space-y-3">
+          <h3 class="text-amber-400 font-bold text-sm border-b border-slate-800 pb-1.5 flex items-center space-x-2">
+            <i class="fa-solid fa-square-root-variable"></i>
+            <span>2. Step-by-Step Partial Fractions Integration <a href="#" onclick="goToSlide(7)" class="cite-ref">[1]</a></span>
+          </h3>
+          
+          <div class="space-y-2.5 text-xs">
+            <div>
+              <p class="font-semibold text-slate-200">Step A: Separation of Variables</p>
+              <p class="text-[11px] text-slate-400">Divide both sides by $(S - S_\infty)(S_0 - S)$ and multiply by $dt$:</p>
+              <div class="bg-slate-950 p-1.5 rounded border border-slate-800 font-mono text-center text-amber-300 mt-1">
+                $$\int \frac{1}{(S - S_\infty)(S_0 - S)} \, dS = \int -k \, dt$$
+              </div>
+            </div>
+
+            <div>
+              <p class="font-semibold text-slate-200">Step B: Partial Fraction Decomposition</p>
+              <p class="text-[11px] text-slate-400">Assume $\frac{1}{(S - S_\infty)(S_0 - S)} = \frac{A}{S - S_\infty} + \frac{B}{S_0 - S}$. Multiply by common denominator:</p>
+              <div class="bg-slate-950 p-1.5 rounded border border-slate-800 font-mono text-center text-slate-200 mt-1">
+                $$1 = A(S_0 - S) + B(S - S_\infty)$$
+              </div>
+              <div class="grid grid-cols-2 gap-2 font-mono text-[11px] text-center mt-1">
+                <div class="bg-slate-950 p-1.5 rounded border border-slate-800">
+                  <span class="text-slate-400 block">Set $S = S_\infty$:</span>
+                  $1 = A(S_0 - S_\infty) + 0 \implies A = \frac{1}{S_0 - S_\infty}$
+                </div>
+                <div class="bg-slate-950 p-1.5 rounded border border-slate-800">
+                  <span class="text-slate-400 block">Set $S = S_0$:</span>
+                  $1 = 0 + B(S_0 - S_\infty) \implies B = \frac{1}{S_0 - S_\infty}$
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <p class="font-semibold text-slate-200">Step C: Antiderivatives & Logarithmic Integration</p>
+              <p class="text-[11px] text-slate-400">Factor out $\frac{1}{S_0 - S_\infty}$ and integrate using $\int \frac{1}{u}du = \ln|u|$ (noting $\frac{d}{dS}(S_0 - S) = -1$):</p>
+              <div class="bg-slate-950 p-1.5 rounded border border-slate-800 font-mono text-center text-cyan-300 text-[11px] mt-1">
+                $$\frac{1}{S_0 - S_\infty} \left[ \ln(S - S_\infty) - \ln(S_0 - S) \right] = -kt + C_0$$
+                $$\ln\left( \frac{S - S_\infty}{S_0 - S} \right) = -(S_0 - S_\infty)kt + C_1 \implies \frac{S - S_\infty}{S_0 - S} = C e^{-(S_0 - S_\infty)kt}$$
+              </div>
+            </div>
+
+            <div>
+              <p class="font-semibold text-slate-200">Step D: Boundary Condition & Inversion for $S(t)$</p>
+              <p class="text-[11px] text-slate-400">At $t=0, S(0)=S_{start}=115\text{ g/L} \implies C = \frac{115 - 30}{120 - 115} = \frac{85}{5} = 17$. Inverting the fraction:</p>
+              <div class="bg-emerald-500/10 border border-emerald-500/40 p-2 rounded-xl text-center font-mono text-emerald-300 font-bold text-xs mt-1">
+                $$S(t) = S_\infty + \frac{S_0 - S_\infty}{1 + \frac{1}{C} e^{(S_0 - S_\infty)kt}} = 30 + \frac{90}{1 + 0.0588 \cdot e^{0.72 t}}$$
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SLIDE 5: STOICHIOMETRY AND LIMITS ================= -->
+    <section id="slide-5" class="slide flex-col space-y-5">
+      <div class="border-b border-slate-800 pb-3 flex flex-col md:flex-row md:items-center justify-between gap-2">
+        <div>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20 mb-1">
+            Chemical Stoichiometry & Limits
+          </span>
+          <h2 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">Stoichiometry, Reaction Flow & Terminal ABV Proof</h2>
+          <p class="text-slate-400 text-xs md:text-sm">Explaining Gay-Lussac reaction pathways, yield factors, and mathematical proof of 5.52% ABV.</p>
+        </div>
+        <div class="text-xs text-slate-400 bg-slate-900 px-3 py-1 rounded-lg border border-slate-800 font-mono">
+          Reaction: <span class="text-amber-400">Gay-Lussac Alcoholic Fermentation</span>
+        </div>
+      </div>
+
+      <!-- Reaction Box Flow Diagram -->
+      <div class="bg-slate-900/90 border border-slate-800 p-4 rounded-2xl">
+        <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2.5 flex items-center">
+          <i class="fa-solid fa-arrows-split-up-and-left mr-1.5"></i> Brewery Materials & Reaction Flowchart
+        </h4>
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-2 items-center text-center text-xs">
+          <div class="bg-slate-950 p-2.5 rounded-xl border border-amber-500/30">
+            <span class="text-amber-400 font-bold block">Wort Sugars ($S$)</span>
+            <span class="text-[10px] text-slate-400">$S_0 = 120\text{ g/L}$ (Malt extract)</span>
+          </div>
+          <div class="text-amber-400 font-bold text-lg"><i class="fa-solid fa-plus"></i></div>
+          <div class="bg-slate-950 p-2.5 rounded-xl border border-emerald-500/30">
+            <span class="text-emerald-400 font-bold block">Active Yeast ($X$)</span>
+            <span class="text-[10px] text-slate-400">*S. cerevisiae* Inoculum</span>
+          </div>
+          <div class="text-amber-400 font-bold text-lg"><i class="fa-solid fa-arrow-right"></i></div>
+          <div class="bg-slate-950 p-2.5 rounded-xl border border-cyan-500/30">
+            <span class="text-cyan-400 font-bold block">Ethanol ($P$) + $\text{CO}_2$</span>
+            <span class="text-[10px] text-slate-400">+ New Yeast Biomass</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 custom-scroll overflow-y-auto max-h-[50vh] pr-1">
+        <!-- Gay-Lussac Equation & Yield Factors -->
+        <div class="bg-slate-900/70 border border-slate-800 p-4 rounded-2xl space-y-2.5 text-xs">
+          <h3 class="text-amber-400 font-bold text-sm border-b border-slate-800 pb-1 flex items-center space-x-2">
+            <i class="fa-solid fa-atom"></i>
+            <span>1. Gay-Lussac Stoichiometry & Yields <a href="#" onclick="goToSlide(7)" class="cite-ref">[3]</a><a href="#" onclick="goToSlide(7)" class="cite-ref">[4]</a></span>
+          </h3>
+          <p class="text-slate-300">
+            In 1815, Joseph Louis Gay-Lussac formulated the stoichiometric equation for alcoholic fermentation:
+          </p>
+          <div class="bg-slate-950 p-2 rounded-xl text-center font-mono text-amber-300 border border-slate-800">
+            $$\text{C}_6\text{H}_{12}\text{O}_6 \xrightarrow{\text{Yeast}} 2\,\text{C}_2\text{H}_5\text{OH} + 2\,\text{CO}_2$$
+          </div>
+          <ul class="space-y-1.5 text-slate-300">
+            <li><b>Molar Mass:</b> $1\text{ mol Glucose } (180.16\text{ g}) \to 2\text{ mol Ethanol } (2 \times 46.07 = 92.14\text{ g})$.</li>
+            <li><b>Theoretical Max:</b> $\frac{92.14}{180.16} = \mathbf{0.5114\text{ g EtOH / g Sugar}}$.</li>
+            <li><b>Practical Pasteur Yield:</b> Yeast diverts $\approx 5\%$ of sugar for cellular growth and flavor esters:
+              $$Y_{P/S} = 0.5114 \times 0.95 = \mathbf{0.484\text{ g/g}}$$
+            </li>
+          </ul>
+        </div>
+
+        <!-- Proof of 5.52% ABV and Limits -->
+        <div class="bg-slate-900/70 border border-slate-800 p-4 rounded-2xl space-y-2.5 text-xs">
+          <h3 class="text-amber-400 font-bold text-sm border-b border-slate-800 pb-1 flex items-center space-x-2">
+            <i class="fa-solid fa-calculator"></i>
+            <span>2. Density Conversion & Proof of 5.52% ABV <a href="#" onclick="goToSlide(7)" class="cite-ref">[1]</a><a href="#" onclick="goToSlide(7)" class="cite-ref">[4]</a></span>
+          </h3>
+          <p class="text-slate-300">
+            Ethanol density at $20^\circ\text{C}$ is $\rho = 0.78924\text{ g/mL}$. Converting mass $P(t)$ to Alcohol by Volume (%ABV):
+          </p>
+          <div class="bg-slate-950 p-2 rounded border border-slate-800 font-mono text-cyan-300 text-center">
+            $$\%ABV(t) = \frac{P(t)}{7.8924} = \frac{0.484 \times (S_0 - S(t))}{7.8924} \approx \mathbf{0.0613 \times (S_0 - S(t))}$$
+          </div>
+          <p class="text-slate-300 font-semibold">Terminal Equilibrium Proof ($\lim_{t \to \infty}$):</p>
+          <div class="bg-slate-950 p-2 rounded border border-emerald-500/30 text-emerald-300 font-mono text-center">
+            $$\lim_{t \to \infty} S(t) = 30\text{ g/L} \implies \lim_{t \to \infty} \%ABV = 0.0613 \times (120 - 30) = \mathbf{5.52\% \text{ ABV}}$$
+          </div>
+          <p class="text-[11px] text-slate-400 italic">
+            This proves why exactly $5.52\%\text{ ABV}$ is reached: $90\text{ g/L}$ fermentable sugar yields $43.56\text{ g/L}$ ethanol, while $30\text{ g/L}$ dextrins provide body.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SLIDE 6: RESULTS AND CASE STUDY ================= -->
+    <section id="slide-6" class="slide flex-col space-y-5">
+      <div class="border-b border-slate-800 pb-3 flex flex-col md:flex-row md:items-center justify-between gap-2">
+        <div>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20 mb-1">
+            Simulation & Case Study
+          </span>
+          <h2 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">Case Study Results, Timeline & Operational Reality</h2>
+          <p class="text-slate-400 text-xs md:text-sm">Numerical simulation of Pale Ale fermentation ($S_0 = 120\text{ g/L}$, $S_\infty = 30\text{ g/L}$, $k = 0.008\text{ L/(g}\cdot\text{day)}$).</p>
+        </div>
+        <div class="text-xs text-slate-400 bg-slate-900 px-3 py-1 rounded-lg border border-slate-800 font-mono">
+          Validation: <span class="text-emerald-400">Day 0 to Day 14 Simulation</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 custom-scroll overflow-y-auto max-h-[64vh] pr-1">
+        <!-- Left: Interactive Dynamic Chart -->
+        <div class="lg:col-span-6 bg-slate-900/70 border border-slate-800 p-4 rounded-2xl flex flex-col justify-between">
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">
+              <i class="fa-solid fa-chart-area mr-1"></i> Kinetic Curves: $S(t)$ vs $\%ABV(t)$
+            </h3>
+            <span class="text-[10px] bg-slate-800 px-2 py-0.5 rounded text-slate-400">Chart.js Live Plot</span>
+          </div>
+          <div class="relative w-full h-52 md:h-60">
+            <canvas id="fermentationChart"></canvas>
+          </div>
+          <p class="text-[11px] text-slate-400 text-center mt-2">
+            <span class="text-amber-400 font-semibold">● Sugar $S(t)$</span> decays toward $30\text{ g/L}$ while <span class="text-emerald-400 font-semibold">● %ABV</span> reaches $5.52\%$ on Day 7.
+          </p>
+        </div>
+
+        <!-- Right: Reality Comparison & Data Table -->
+        <div class="lg:col-span-6 space-y-3">
+          <!-- Reality vs Mathematical Model Comparison -->
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div class="bg-rose-950/30 border border-rose-500/30 p-2.5 rounded-xl">
+              <span class="text-rose-400 font-bold block mb-1"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Traditional Reality</span>
+              <p class="text-[11px] text-slate-300">Daily manual sampling (50–100 mL/day) drains 5–10% of batch; random timing for cooling jackets.</p>
+            </div>
+            <div class="bg-emerald-950/30 border border-emerald-500/30 p-2.5 rounded-xl">
+              <span class="text-emerald-400 font-bold block mb-1"><i class="fa-solid fa-square-check mr-1"></i> Calculus Model</span>
+              <p class="text-[11px] text-slate-300">Only 2 calibrations needed (Day 4 & 7); automated Diacetyl Rest & Cold Crash triggers.</p>
+            </div>
+          </div>
+
+          <!-- Table -->
+          <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-900/80">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-950 text-amber-400 border-b border-slate-800 font-mono text-[11px]">
+                <tr>
+                  <th class="p-2">Time $t$</th>
+                  <th class="p-2">Sugar $S(t)$</th>
+                  <th class="p-2">Ethanol</th>
+                  <th class="p-2">%ABV</th>
+                  <th class="p-2">Brewing Phase <a href="#" onclick="goToSlide(7)" class="cite-ref">[2]</a><a href="#" onclick="goToSlide(7)" class="cite-ref">[3]</a></th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800/60 text-slate-300 font-mono text-[11px]">
+                <tr>
+                  <td class="p-1.5 font-bold text-white">Day 0</td>
+                  <td class="p-1.5">115.0 g/L</td>
+                  <td class="p-1.5">2.4 g/L</td>
+                  <td class="p-1.5 text-slate-400">0.30%</td>
+                  <td class="p-1.5 font-sans text-slate-400">Lag Phase / Inoculation</td>
+                </tr>
+                <tr class="bg-amber-500/5">
+                  <td class="p-1.5 font-bold text-amber-400">Day 2</td>
+                  <td class="p-1.5 text-amber-300">99.4 g/L</td>
+                  <td class="p-1.5">10.0 g/L</td>
+                  <td class="p-1.5 text-amber-400">1.26%</td>
+                  <td class="p-1.5 font-sans text-amber-300">Exponential Phase</td>
+                </tr>
+                <tr class="bg-cyan-500/10">
+                  <td class="p-1.5 font-bold text-cyan-400">Day 4</td>
+                  <td class="p-1.5 text-cyan-300">56.2 g/L</td>
+                  <td class="p-1.5">30.9 g/L</td>
+                  <td class="p-1.5 text-cyan-400">3.91%</td>
+                  <td class="p-1.5 font-sans text-cyan-300 font-semibold">Trigger Diacetyl Rest</td>
+                </tr>
+                <tr class="bg-emerald-500/10">
+                  <td class="p-1.5 font-bold text-emerald-400">Day 7</td>
+                  <td class="p-1.5 text-emerald-300">31.4 g/L</td>
+                  <td class="p-1.5">42.9 g/L</td>
+                  <td class="p-1.5 text-emerald-400 font-bold">5.43%</td>
+                  <td class="p-1.5 font-sans text-emerald-300 font-semibold">Primary Done / Cold Crash</td>
+                </tr>
+                <tr>
+                  <td class="p-1.5 font-bold text-white">Day 8–14</td>
+                  <td class="p-1.5">30.0 g/L</td>
+                  <td class="p-1.5">43.6 g/L</td>
+                  <td class="p-1.5 text-emerald-400">5.52%</td>
+                  <td class="p-1.5 font-sans text-slate-300">Conditioning & Flocculation</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SLIDE 7: REFERENCES ================= -->
+    <section id="slide-7" class="slide flex-col space-y-5">
+      <div class="border-b border-slate-800 pb-3 flex flex-col md:flex-row md:items-center justify-between gap-2">
+        <div>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20 mb-1">
+            Academic Foundation
+          </span>
+          <h2 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">References & Citation Mapping</h2>
+          <p class="text-slate-400 text-xs md:text-sm">Formal academic citations supporting the mathematical derivations and bioprocess parameters.</p>
+        </div>
+        <div class="text-xs text-slate-400 bg-slate-900 px-3 py-1 rounded-lg border border-slate-800 font-mono">
+          Citations: <span class="text-amber-400">[1] [2] [3] [4]</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-3.5 custom-scroll overflow-y-auto max-h-[64vh] pr-1">
+        <!-- Reference 1 -->
+        <div class="bg-slate-900/80 border border-slate-800 p-4 rounded-xl flex items-start space-x-3 hover:border-amber-500/40 transition">
+          <span class="bg-amber-500/20 text-amber-400 font-mono font-bold px-2.5 py-1 rounded-lg border border-amber-500/30 text-xs flex-shrink-0">
+            [1]
+          </span>
+          <div class="space-y-1 text-xs">
+            <h3 class="font-bold text-white text-sm">Stewart, J. (2020). <i>Calculus: Early Transcendentals</i> (9th ed.). Cengage Learning.</h3>
+            <p class="text-slate-400">
+              Provides mathematical formulation for Separation of Variables, Linear Partial Fraction Decomposition, and Limit evaluations at infinity ($\lim_{t \to \infty}$).
+            </p>
+          </div>
+        </div>
+
+        <!-- Reference 2 -->
+        <div class="bg-slate-900/80 border border-slate-800 p-4 rounded-xl flex items-start space-x-3 hover:border-amber-500/40 transition">
+          <span class="bg-amber-500/20 text-amber-400 font-mono font-bold px-2.5 py-1 rounded-lg border border-amber-500/30 text-xs flex-shrink-0">
+            [2]
+          </span>
+          <div class="space-y-1 text-xs">
+            <h3 class="font-bold text-white text-sm">De Andrés-Toro, B., Girón-Sierra, J. M., López-Orozco, J. A., & Fernández-Conde, C. (1998). A kinetic model for beer production under industrial operational conditions. <i>Mathematics and Computers in Simulation</i>, 48(1), 65-74.</h3>
+            <p class="text-slate-400">
+              Establishes industrial differential rate laws for yeast growth and substrate consumption, confirming $R^2 > 0.96$ model accuracy against experimental brewery batch data.
+            </p>
+          </div>
+        </div>
+
+        <!-- Reference 3 -->
+        <div class="bg-slate-900/80 border border-slate-800 p-4 rounded-xl flex items-start space-x-3 hover:border-amber-500/40 transition">
+          <span class="bg-amber-500/20 text-amber-400 font-mono font-bold px-2.5 py-1 rounded-lg border border-amber-500/30 text-xs flex-shrink-0">
+            [3]
+          </span>
+          <div class="space-y-1 text-xs">
+            <h3 class="font-bold text-white text-sm">Boulton, C., & Quain, D. (2006). <i>Brewing Yeast and Fermentation</i>. Blackwell Science.</h3>
+            <p class="text-slate-400">
+              Details yeast fermentation stoichiometry, Gay-Lussac yield coefficients, residual dextrin fractions ($S_\infty = 30\text{ g/L}$), and the distinction between Primary Fermentation and Conditioning phases.
+            </p>
+          </div>
+        </div>
+
+        <!-- Reference 4 -->
+        <div class="bg-slate-900/80 border border-slate-800 p-4 rounded-xl flex items-start space-x-3 hover:border-amber-500/40 transition">
+          <span class="bg-amber-500/20 text-amber-400 font-mono font-bold px-2.5 py-1 rounded-lg border border-amber-500/30 text-xs flex-shrink-0">
+            [4]
+          </span>
+          <div class="space-y-1 text-xs">
+            <h3 class="font-bold text-white text-sm">Fix, G. (1999). <i>Principles of Brewing Science: A Study of Serious Brewing Issues</i>. Brewers Publications.</h3>
+            <p class="text-slate-400">
+              Validates practical ethanol yield factors ($0.484\text{ g/g}$) incorporating the $95\%$ Pasteur effect factor and ethanol density conversions for commercial %ABV calculations.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer Controls -->
+  <footer class="bg-slate-900/90 border-t border-slate-800 py-3 px-4 md:px-8 backdrop-blur sticky bottom-0 z-50">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <button id="prev-btn" onclick="changeSlide(-1)" class="px-4 py-2 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center space-x-2 disabled:opacity-40 disabled:cursor-not-allowed">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Previous Slide</span>
+      </button>
+
+      <div class="text-xs text-slate-400 hidden md:block">
+        Use <kbd class="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-amber-400 font-mono">←</kbd> <kbd class="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-amber-400 font-mono">→</kbd> Keys to Navigate
+      </div>
+
+      <button id="next-btn" onclick="changeSlide(1)" class="px-4 py-2 text-xs font-semibold rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold transition flex items-center space-x-2">
+        <span>Next Slide</span>
+        <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </div>
+  </footer>
+
+  <!-- JavaScript Presentation Controller -->
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 7;
+    let chartInstance = null;
+
+    function updateSlideUI() {
+      // Hide all slides
+      for (let i = 1; i <= totalSlides; i++) {
+        const slide = document.getElementById(`slide-${i}`);
+        if (slide) slide.classList.remove('active');
+      }
+
+      // Show current slide
+      const activeSlide = document.getElementById(`slide-${currentSlide}`);
+      if (activeSlide) activeSlide.classList.add('active');
+
+      // Update counters & buttons
+      document.getElementById('current-slide-num').innerText = currentSlide;
+      
+      const prevBtn = document.getElementById('prev-btn');
+      const nextBtn = document.getElementById('next-btn');
+
+      prevBtn.disabled = (currentSlide === 1);
+      
+      if (currentSlide === totalSlides) {
+        nextBtn.innerHTML = '<span>Complete Deck</span> <i class="fa-solid fa-check"></i>';
+      } else {
+        nextBtn.innerHTML = '<span>Next Slide</span> <i class="fa-solid fa-arrow-right"></i>';
+      }
+
+      // Update top dots
+      const dots = document.querySelectorAll('.indicator-dot');
+      dots.forEach((dot, idx) => {
+        if (idx + 1 === currentSlide) {
+          dot.className = 'indicator-dot px-2 py-1 text-xs font-bold rounded border border-amber-500 bg-amber-500/20 text-amber-400 shadow';
+        } else {
+          dot.className = 'indicator-dot px-2 py-1 text-xs font-semibold rounded border border-slate-700 bg-slate-800 text-slate-400 hover:text-slate-200';
+        }
+      });
+
+      // Typeset MathJax if available
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise();
+      }
+
+      // Render Chart if on Slide 6 (Case Study)
+      if (currentSlide === 6) {
+        setTimeout(renderChart, 100);
+      }
+    }
+
+    function goToSlide(slideNum) {
+      if (slideNum >= 1 && slideNum <= totalSlides) {
+        currentSlide = slideNum;
+        updateSlideUI();
+      }
+    }
+
+    function changeSlide(direction) {
+      const target = currentSlide + direction;
+      if (target >= 1 && target <= totalSlides) {
+        currentSlide = target;
+        updateSlideUI();
+      }
+    }
+
+    // Keyboard Arrow Navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown') {
+        changeSlide(1);
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        changeSlide(-1);
+      }
+    });
+
+    // Render Chart.js for Case Study (Slide 6)
+    function renderChart() {
+      const ctx = document.getElementById('fermentationChart');
+      if (!ctx) return;
+
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+
+      const days = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
+      
+      // S(t) = 30 + 90 / (1 + 0.0588 * e^(0.72 * t))
+      const sugarData = days.map(t => {
+        const val = 30 + (90 / (1 + 0.0588 * Math.exp(0.72 * t)));
+        return parseFloat(val.toFixed(1));
+      });
+
+      // %ABV = 0.0613 * (120 - S(t))
+      const abvData = sugarData.map(s => {
+        const abv = 0.0613 * (120 - s);
+        return parseFloat(abv.toFixed(2));
+      });
+
+      chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: days.map(d => `Day ${d}`),
+          datasets: [
+            {
+              label: 'Sugar Concentration S(t) [g/L]',
+              data: sugarData,
+              borderColor: '#f59e0b',
+              backgroundColor: 'rgba(245, 158, 11, 0.15)',
+              borderWidth: 2.5,
+              fill: true,
+              tension: 0.35,
+              yAxisID: 'y'
+            },
+            {
+              label: 'Alcohol %ABV(t)',
+              data: abvData,
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.15)',
+              borderWidth: 2.5,
+              fill: true,
+              tension: 0.35,
+              yAxisID: 'y1'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { color: '#cbd5e1', font: { size: 10, family: 'Inter' } }
+            },
+            tooltip: {
+              backgroundColor: '#0f172a',
+              titleColor: '#f59e0b',
+              borderColor: '#334155',
+              borderWidth: 1
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(51, 65, 85, 0.4)' },
+              ticks: { color: '#94a3b8', font: { size: 9 } }
+            },
+            y: {
+              type: 'linear',
+              position: 'left',
+              title: { display: true, text: 'Sugar (g/L)', color: '#f59e0b', font: { size: 10 } },
+              grid: { color: 'rgba(51, 65, 85, 0.4)' },
+              ticks: { color: '#f59e0b', font: { size: 9 } },
+              min: 0,
+              max: 130
+            },
+            y1: {
+              type: 'linear',
+              position: 'right',
+              title: { display: true, text: '%ABV', color: '#10b981', font: { size: 10 } },
+              grid: { drawOnChartArea: false },
+              ticks: { color: '#10b981', font: { size: 9 } },
+              min: 0,
+              max: 8
+            }
+          }
+        }
+      });
+    }
+
+    // Initialize presentation on load
+    window.onload = function() {
+      updateSlideUI();
+    };
+  </script>
+</body>
+</html>
